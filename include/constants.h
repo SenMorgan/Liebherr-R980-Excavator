@@ -10,6 +10,9 @@
 #ifndef _CONSTANTS_H
 #define _CONSTANTS_H
 
+// Period between CPU temperature readings
+#define TEMP_READ_INTERVAL 1000
+
 // IO pins
 #define RGB_LED_BUILTIN 48
 

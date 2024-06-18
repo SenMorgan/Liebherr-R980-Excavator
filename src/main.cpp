@@ -1,4 +1,3 @@
-#include <esp_now.h>
 #include <WiFi.h>
 #include <Wire.h>
 #include "driver/temp_sensor.h"
@@ -6,6 +5,7 @@
 #include "constants.h"
 #include "data_structures.h"
 #include "esp_now_manager.h"
+#include "wifi_ota_manager.h"
 
 // Create a variable to store the received data
 controller_data_struct receivedData;
@@ -14,6 +14,7 @@ controller_data_struct receivedData;
 excavator_data_struct dataToSend;
 
 float cpuTemp = -999.0;
+uint32_t lastTempReadTime = 0;
 
 void initTempSensor()
 {
@@ -49,19 +50,28 @@ void setup()
     // Init Serial Monitor
     Serial.begin(115200);
 
-    // Set device as a Wi-Fi Station
-    WiFi.mode(WIFI_STA);
-
+    // Init Wi-Fi and OTA
+    setupWiFi();
+    setupOTA();
     // Init ESP-NOW
     initEspNow();
+
+    // Register callback for data received from Controller
     registerDataRecvCallback(onDataFromController);
+
+    // Finish initialization by logging message
+    Serial.println(HOSTNAME + String(" initialized"));
 }
 
 void loop()
 {
-    temp_sensor_read_celsius(&cpuTemp);
-    // Serial.printf("CPU Temp: %.2f °C\n", cpuTemp);
+    handleOTA();
 
-    // Wait some time before next iteration
-    delay(1000);
+    // Read CPU temperature every
+    if (millis() - lastTempReadTime > TEMP_READ_INTERVAL)
+    {
+        lastTempReadTime = millis();
+        temp_sensor_read_celsius(&cpuTemp);
+        // Serial.printf("CPU Temp: %.2f °C\n", cpuTemp);
+    }
 }
