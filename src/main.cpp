@@ -13,7 +13,7 @@ controller_data_struct receivedData;
 // Create a variable to store the data that will be sent to the Controller
 excavator_data_struct dataToSend;
 
-float cpuTemp = -999.0;
+int16_t cpuTemp = -999;
 uint32_t lastTempReadTime = 0;
 
 void initTempSensor()
@@ -25,12 +25,21 @@ void initTempSensor()
     temp_sensor_start();
 }
 
+int16_t getCpuTemp()
+{
+    static float cpuTempF = 0.0;
+    temp_sensor_read_celsius(&cpuTempF);
+    // Multiply temperature by 100 to keep 2 decimal places
+    return (int16_t)(cpuTempF * 100.0);
+}
+
 // Callback when data from Controller received
 void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int len)
 {
     memcpy(&receivedData, incomingData, sizeof(receivedData));
-    Serial.printf("\nReceived from Controller:\nBoom: %d\nDipper: %d\nBucket: %d\nSwing: %d\nTrack Left: %d\nTrack Right: %d\n",
-                  receivedData.boom, receivedData.dipper, receivedData.bucket, receivedData.swing, receivedData.trackLeft, receivedData.trackRight);
+    Serial.printf("\nReceived from Controller:\nBoom: %d\nBucket: %d\nStick: %d\nSwing: %d\nTrack Left: %d\nTrack Right: %d\nBattery: %d\n",
+                  receivedData.boomPos, receivedData.bucketPos, receivedData.stickPos, receivedData.swingPos,
+                  receivedData.travelLeftPos, receivedData.travelRightPos, receivedData.battery);
 
     // Send the dataToSend to the Controller
     dataToSend.uptime = millis() / 1000;
@@ -71,7 +80,6 @@ void loop()
     if (millis() - lastTempReadTime > TEMP_READ_INTERVAL)
     {
         lastTempReadTime = millis();
-        temp_sensor_read_celsius(&cpuTemp);
-        // Serial.printf("CPU Temp: %.2f °C\n", cpuTemp);
+        cpuTemp = getCpuTemp();
     }
 }
