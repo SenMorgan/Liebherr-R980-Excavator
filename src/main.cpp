@@ -37,7 +37,7 @@ int16_t getCpuTemp()
 void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int len)
 {
     memcpy(&receivedData, incomingData, sizeof(receivedData));
-    Serial.printf("\nReceived from Controller:\nBoom: %d\nBucket: %d\nStick: %d\nSwing: %d\nTrack Left: %d\nTrack Right: %d\nBattery: %d\n",
+    Serial.printf("Received from Controller: Boom: %3d | Bucket: %3d | Stick: %3d | Swing: %3d | Track Left: %3d | Track Right: %3d | Battery: %3d\n",
                   receivedData.boomPos, receivedData.bucketPos, receivedData.stickPos, receivedData.swingPos,
                   receivedData.travelLeftPos, receivedData.travelRightPos, receivedData.battery);
 
