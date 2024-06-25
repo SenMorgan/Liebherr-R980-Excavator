@@ -13,6 +13,9 @@
 // Period between CPU temperature readings
 #define TEMP_READ_INTERVAL 1000
 
+// Number of levers
+#define LEVERS_COUNT 6
+
 // IO pins
 #define RGB_LED_BUILTIN 48
 
