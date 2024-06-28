@@ -100,7 +100,7 @@ void setup()
     registerDataRecvCallback(onDataFromController);
 
     // Finish initialization by logging message
-    Serial.println(HOSTNAME + String(" initialized"));
+    Serial.printf("\n%s [%s] initialized\n", HOSTNAME, WiFi.macAddress().c_str());
 }
 
 void loop()
