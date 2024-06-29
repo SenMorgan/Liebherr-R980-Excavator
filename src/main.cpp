@@ -14,8 +14,8 @@ controller_data_struct receivedData;
 // Create a variable to store the data that will be sent to the Controller
 excavator_data_struct dataToSend;
 
-GMotor2<DRIVER2WIRE_PWM> boomMotor(BOOM_MOTOR_POS, BOOM_MOTOR_NEG);
 // TODO: only 8 PWM pins available on ESP32
+GMotor2<DRIVER2WIRE_PWM> boomMotor(BOOM_MOTOR_POS, BOOM_MOTOR_NEG);
 // GMotor2<DRIVER2WIRE_PWM> bucketMotor(BUCKET_MOTOR_POS, BUCKET_MOTOR_NEG);
 // GMotor2<DRIVER2WIRE_PWM> stickMotor(STICK_MOTOR_POS, STICK_MOTOR_NEG);
 GMotor2<DRIVER2WIRE_PWM> swingMotor(SWING_MOTOR_POS, SWING_MOTOR_NEG);
@@ -46,10 +46,11 @@ int16_t getCpuTemp()
 void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int len)
 {
     memcpy(&receivedData, incomingData, sizeof(receivedData));
-    Serial.printf("Received from Controller: Boom: %3d | Bucket: %3d | Stick: %3d | Swing: %3d | Track Left: %3d | Track Right: %3d | Battery: %3d\n",
+    Serial.printf("Received from Controller: Boom: %3d | Bucket: %3d | Stick: %3d | Swing: %3d | "
+                  "Track Left: %3d | Track Right: %3d | Lights: %d | Center Swing: %d | Battery: %3d\n",
                   receivedData.leverPositions[0], receivedData.leverPositions[1], receivedData.leverPositions[2],
                   receivedData.leverPositions[3], receivedData.leverPositions[4], receivedData.leverPositions[5],
-                  receivedData.battery);
+                  receivedData.buttonsStates[0], receivedData.buttonsStates[1], receivedData.battery);
 
     boomMotor.setSpeed(receivedData.leverPositions[0]);
     // bucketMotor.setSpeed(receivedData.leverPositions[1]);
@@ -75,6 +76,9 @@ void setup()
     pinMode(STICK_ROLL_IN_LIMIT, INPUT_PULLUP);
     pinMode(STICK_ROLL_OUT_LIMIT, INPUT_PULLUP);
     pinMode(SWING_CENTER_SWITCH, INPUT_PULLUP);
+
+    pinMode(BOOM_MOTOR_POS, OUTPUT);
+    pinMode(BOOM_MOTOR_NEG, OUTPUT);
 
     // pinMode(RGB_LED_BUILTIN, OUTPUT);
     pinMode(BOOM_LIGHTS, OUTPUT);

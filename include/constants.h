@@ -16,6 +16,9 @@
 // Number of levers
 #define LEVERS_COUNT 6
 
+// Number of buttons
+#define BUTTONS_COUNT 2
+
 // IO pins
 // #define RGB_LED_BUILTIN GPIO_NUM_48
 
