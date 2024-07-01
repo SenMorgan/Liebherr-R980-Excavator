@@ -36,10 +36,18 @@ int16_t getCpuTemp()
     return (int16_t)(cpuTempF * 100.0);
 }
 
-void controlMotor(uint8_t posPin, uint8_t negPin, int16_t speed, bool breakMode = false)
+void controlMotor(uint8_t posPin, uint8_t negPin, int16_t speed, bool breakMode = false, bool reverse = false)
 {
     // Map -255 to 255 range to 0 to 4095 PWM range
     int pwmValue = map(abs(speed), 0, 255, 0, 4095);
+
+    if (reverse)
+    {
+        // Swap the direction if reverse is true
+        uint8_t tempPin = posPin;
+        posPin = negPin;
+        negPin = tempPin;
+    }
 
     if (speed > 0)
     {
@@ -83,7 +91,7 @@ void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int l
     controlMotor(BOOM_MOTOR_POS, BOOM_MOTOR_NEG, receivedData.leverPositions[0], true);
     controlMotor(BUCKET_MOTOR_POS, BUCKET_MOTOR_NEG, receivedData.leverPositions[1], true);
     controlMotor(STICK_MOTOR_POS, STICK_MOTOR_NEG, receivedData.leverPositions[2], true);
-    controlMotor(SWING_MOTOR_POS, SWING_MOTOR_NEG, receivedData.leverPositions[3]);
+    controlMotor(SWING_MOTOR_POS, SWING_MOTOR_NEG, receivedData.leverPositions[3], false, true);
     controlMotor(LEFT_TRAVEL_MOTOR_POS, LEFT_TRAVEL_MOTOR_NEG, receivedData.leverPositions[4]);
     controlMotor(RIGHT_TRAVEL_MOTOR_POS, RIGHT_TRAVEL_MOTOR_NEG, receivedData.leverPositions[5]);
 
