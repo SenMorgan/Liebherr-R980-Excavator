@@ -6,9 +6,18 @@
 #include "constants.h"
 #include "data_structures.h"
 #include "esp_now_manager.h"
+#include "motor.h"
 #include "wifi_ota_manager.h"
 
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+
+// Create Motor objects for each motor
+Motor boomMotor(BOOM_MOTOR_POS, BOOM_MOTOR_NEG);
+Motor bucketMotor(BUCKET_MOTOR_POS, BUCKET_MOTOR_NEG);
+Motor stickMotor(STICK_MOTOR_POS, STICK_MOTOR_NEG);
+Motor swingMotor(SWING_MOTOR_POS, SWING_MOTOR_NEG, false, true);
+Motor leftTravelMotor(LEFT_TRAVEL_MOTOR_POS, LEFT_TRAVEL_MOTOR_NEG, false);
+Motor rightTravelMotor(RIGHT_TRAVEL_MOTOR_POS, RIGHT_TRAVEL_MOTOR_NEG, false);
 
 // Create a variable to store the received data
 controller_data_struct receivedData;
@@ -36,47 +45,6 @@ int16_t getCpuTemp()
     return (int16_t)(cpuTempF * 100.0);
 }
 
-void controlMotor(uint8_t posPin, uint8_t negPin, int16_t speed, bool breakMode = false, bool reverse = false)
-{
-    // Map -255 to 255 range to 0 to 4095 PWM range
-    int pwmValue = map(abs(speed), 0, 255, 0, 4095);
-
-    if (reverse)
-    {
-        // Swap the direction if reverse is true
-        uint8_t tempPin = posPin;
-        posPin = negPin;
-        negPin = tempPin;
-    }
-
-    if (speed > 0)
-    {
-        // Forward direction
-        pwm.setPWM(posPin, 0, pwmValue);
-        pwm.setPWM(negPin, 0, 0);
-    }
-    else if (speed < 0)
-    {
-        // Reverse direction
-        pwm.setPWM(posPin, 0, 0);
-        pwm.setPWM(negPin, 0, pwmValue);
-    }
-    else
-    {
-        // If break mode is enabled, set both pins to HIGH
-        if (breakMode)
-        {
-            pwm.setPWM(posPin, 0, 4095);
-            pwm.setPWM(negPin, 0, 4095);
-        }
-        else
-        {
-            pwm.setPWM(posPin, 0, 0);
-            pwm.setPWM(negPin, 0, 0);
-        }
-    }
-}
-
 // Callback when data from Controller received
 void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int len)
 {
@@ -88,12 +56,12 @@ void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int l
                   receivedData.buttonsStates[0], receivedData.buttonsStates[1], receivedData.battery);
 
     // Control motors based on received data
-    controlMotor(BOOM_MOTOR_POS, BOOM_MOTOR_NEG, receivedData.leverPositions[0], true);
-    controlMotor(BUCKET_MOTOR_POS, BUCKET_MOTOR_NEG, receivedData.leverPositions[1], true);
-    controlMotor(STICK_MOTOR_POS, STICK_MOTOR_NEG, receivedData.leverPositions[2], true);
-    controlMotor(SWING_MOTOR_POS, SWING_MOTOR_NEG, receivedData.leverPositions[3], false, true);
-    controlMotor(LEFT_TRAVEL_MOTOR_POS, LEFT_TRAVEL_MOTOR_NEG, receivedData.leverPositions[4]);
-    controlMotor(RIGHT_TRAVEL_MOTOR_POS, RIGHT_TRAVEL_MOTOR_NEG, receivedData.leverPositions[5]);
+    boomMotor.setSpeed(receivedData.leverPositions[0]);
+    bucketMotor.setSpeed(receivedData.leverPositions[1]);
+    stickMotor.setSpeed(receivedData.leverPositions[2]);
+    swingMotor.setSpeed(receivedData.leverPositions[3]);
+    leftTravelMotor.setSpeed(receivedData.leverPositions[4]);
+    rightTravelMotor.setSpeed(receivedData.leverPositions[5]);
 
     // Control lights
     if (receivedData.buttonsStates[0])
@@ -117,12 +85,6 @@ void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int l
 void setup()
 {
     // Setup pins
-    // pinMode(BOOM_LOW_LIMIT, INPUT_PULLUP);
-    // pinMode(BOOM_HIGH_LIMIT, INPUT_PULLUP);
-    pinMode(BUCKET_ROLL_IN_LIMIT, INPUT_PULLUP);
-    pinMode(BUCKET_ROLL_OUT_LIMIT, INPUT_PULLUP);
-    pinMode(STICK_ROLL_IN_LIMIT, INPUT_PULLUP);
-    pinMode(STICK_ROLL_OUT_LIMIT, INPUT_PULLUP);
     pinMode(SWING_CENTER_SWITCH, INPUT_PULLUP);
 
     // pinMode(RGB_LED_BUILTIN, OUTPUT);
@@ -134,6 +96,11 @@ void setup()
     pwm.begin();
     pwm.setOscillatorFrequency(27000000);
     pwm.setPWMFreq(1600);
+
+    // Setup motors
+    // boomMotor.setupLimitSwitches(BOOM_LOW_LIMIT, BOOM_HIGH_LIMIT);
+    bucketMotor.setupLimitSwitches(BUCKET_ROLL_IN_LIMIT, BUCKET_ROLL_OUT_LIMIT);
+    stickMotor.setupLimitSwitches(STICK_ROLL_IN_LIMIT, STICK_ROLL_OUT_LIMIT);
 
     // Init Temp Sensor
     initTempSensor();
@@ -163,5 +130,19 @@ void loop()
     {
         lastTempReadTime = millis();
         cpuTemp = getCpuTemp();
+    }
+
+    static bool lastPosLimitState = false;
+    static bool lastNegLimitState = false;
+
+    if (stickMotor.posLimitReached != lastPosLimitState)
+    {
+        lastPosLimitState = stickMotor.posLimitReached;
+        Serial.println("Positive limit reached: " + String(lastPosLimitState));
+    }
+    if (stickMotor.negLimitReached != lastNegLimitState)
+    {
+        lastNegLimitState = stickMotor.negLimitReached;
+        Serial.println("Negative limit reached: " + String(lastNegLimitState));
     }
 }
