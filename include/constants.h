@@ -34,7 +34,7 @@
 // Limit switches
 // #define BOOM_LOW_LIMIT
 // #define BOOM_HIGH_LIMIT
-#define BUCKET_ROLL_IN_LIMIT  GPIO_NUM_14 // PWM at startup - change with boom lights?
+#define BUCKET_ROLL_IN_LIMIT  GPIO_NUM_14
 #define BUCKET_ROLL_OUT_LIMIT GPIO_NUM_13
 #define STICK_ROLL_IN_LIMIT   GPIO_NUM_11
 #define STICK_ROLL_OUT_LIMIT  GPIO_NUM_10

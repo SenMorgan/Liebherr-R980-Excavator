@@ -1,20 +1,17 @@
 #include <WiFi.h>
 #include "driver/temp_sensor.h"
-#include <SPI.h>
-#include <Adafruit_PWMServoDriver.h>
 
 #include "constants.h"
 #include "data_structures.h"
 #include "esp_now_manager.h"
 #include "motor.h"
+#include "pwm_controller.h"
 #include "wifi_ota_manager.h"
-
-Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 // Create Motor objects for each motor
 Motor boomMotor(BOOM_MOTOR_POS, BOOM_MOTOR_NEG);
 Motor bucketMotor(BUCKET_MOTOR_POS, BUCKET_MOTOR_NEG);
-Motor stickMotor(STICK_MOTOR_POS, STICK_MOTOR_NEG);
+Motor stickMotor(STICK_MOTOR_POS, STICK_MOTOR_NEG, true, true);
 Motor swingMotor(SWING_MOTOR_POS, SWING_MOTOR_NEG, false, true);
 Motor leftTravelMotor(LEFT_TRAVEL_MOTOR_POS, LEFT_TRAVEL_MOTOR_NEG, false);
 Motor rightTravelMotor(RIGHT_TRAVEL_MOTOR_POS, RIGHT_TRAVEL_MOTOR_NEG, false);
@@ -67,18 +64,18 @@ void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int l
     if (receivedData.buttonsStates[0])
     {
         digitalWrite(BOOM_LIGHTS, HIGH);
-        pwm.setPWM(CABIN_FRONT_LIGHTS, 0, 4095);
-        pwm.setPWM(CABIN_BACK_LIGHTS, 0, 4095);
-        pwm.setPWM(LEFT_LIGHT, 0, 4095);
-        pwm.setPWM(RIGHT_LIGHT, 0, 4095);
+        setPinPWM(CABIN_FRONT_LIGHTS, PWM_ON);
+        setPinPWM(CABIN_BACK_LIGHTS, PWM_ON);
+        setPinPWM(LEFT_LIGHT, PWM_ON);
+        setPinPWM(RIGHT_LIGHT, PWM_ON);
     }
     else
     {
         digitalWrite(BOOM_LIGHTS, LOW);
-        pwm.setPWM(CABIN_FRONT_LIGHTS, 0, 0);
-        pwm.setPWM(CABIN_BACK_LIGHTS, 0, 0);
-        pwm.setPWM(LEFT_LIGHT, 0, 0);
-        pwm.setPWM(RIGHT_LIGHT, 0, 0);
+        setPinPWM(CABIN_FRONT_LIGHTS, PWM_OFF);
+        setPinPWM(CABIN_BACK_LIGHTS, PWM_OFF);
+        setPinPWM(LEFT_LIGHT, PWM_OFF);
+        setPinPWM(RIGHT_LIGHT, PWM_OFF);
     }
 }
 
@@ -89,13 +86,10 @@ void setup()
 
     // pinMode(RGB_LED_BUILTIN, OUTPUT);
     pinMode(BOOM_LIGHTS, OUTPUT);
-
     digitalWrite(BOOM_LIGHTS, HIGH);
 
-    // Init PWM with maximum frequency
-    pwm.begin();
-    pwm.setOscillatorFrequency(27000000);
-    pwm.setPWMFreq(1600);
+    // Setup PWM
+    pwmTaskInit();
 
     // Setup motors
     // boomMotor.setupLimitSwitches(BOOM_LOW_LIMIT, BOOM_HIGH_LIMIT);
@@ -135,14 +129,14 @@ void loop()
     static bool lastPosLimitState = false;
     static bool lastNegLimitState = false;
 
-    if (stickMotor.posLimitReached != lastPosLimitState)
+    if (bucketMotor.posLimitReached != lastPosLimitState)
     {
-        lastPosLimitState = stickMotor.posLimitReached;
+        lastPosLimitState = bucketMotor.posLimitReached;
         Serial.println("Positive limit reached: " + String(lastPosLimitState));
     }
-    if (stickMotor.negLimitReached != lastNegLimitState)
+    if (bucketMotor.negLimitReached != lastNegLimitState)
     {
-        lastNegLimitState = stickMotor.negLimitReached;
+        lastNegLimitState = bucketMotor.negLimitReached;
         Serial.println("Negative limit reached: " + String(lastNegLimitState));
     }
 }

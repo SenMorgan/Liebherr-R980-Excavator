@@ -11,16 +11,16 @@ public:
     Motor(uint8_t posMotorPin, uint8_t negMotorPin, bool breakMode = true, bool reverse = false);
     void setupLimitSwitches(gpio_num_t posLimitPin, gpio_num_t negLimitPin);
     void setSpeed(int16_t speed);
-    static void posLimitISR();
-    static void negLimitISR();
-    void handlePosLimitReached();
-    void handleNegLimitReached();
+    void stop(void);
+    void stopImmediate(void);
 
     volatile bool posLimitReached;
     volatile bool negLimitReached;
 
 private:
-    static Motor* _instance; // Static instance pointer for interrupt handler
+    void _handlePosLimitReached();
+    void _handleNegLimitReached();
+
     uint8_t _posMotorPin;
     uint8_t _negMotorPin;
     gpio_num_t _posLimitPin;
