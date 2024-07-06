@@ -8,7 +8,6 @@
  */
 
 #include "pwm_controller.h"
-#include <SPI.h>
 #include <Adafruit_PWMServoDriver.h>
 
 #define PWM_TASK_STACK_SIZE (2 * 1024U)
