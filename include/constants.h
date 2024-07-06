@@ -41,8 +41,8 @@
 // Motor driver pins connected to PCA9685
 #define BOOM_MOTOR_POS         14
 #define BOOM_MOTOR_NEG         15
-#define BUCKET_MOTOR_POS       11
-#define BUCKET_MOTOR_NEG       10
+#define BUCKET_MOTOR_POS       10
+#define BUCKET_MOTOR_NEG       11
 #define STICK_MOTOR_POS        9
 #define STICK_MOTOR_NEG        8
 #define SWING_MOTOR_POS        12
