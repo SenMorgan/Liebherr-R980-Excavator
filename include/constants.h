@@ -10,9 +10,6 @@
 #ifndef _CONSTANTS_H
 #define _CONSTANTS_H
 
-// Period between CPU temperature readings
-#define TEMP_READ_INTERVAL 1000
-
 // Number of levers
 #define LEVERS_COUNT 6
 
@@ -20,10 +17,11 @@
 #define BUTTONS_COUNT 2
 
 // IO pins
-// #define RGB_LED_BUILTIN GPIO_NUM_48
+#define MOTOR_DRIVER_FAULT GPIO_NUM_16
+#define MOTOR_DRIVER_SLEEP GPIO_NUM_17
 
 // Lights
-#define BOOM_LIGHTS GPIO_NUM_12
+#define BOOM_LIGHTS GPIO_NUM_26
 
 // Lights connected to PCA9685
 #define LEFT_LIGHT         0
@@ -32,13 +30,13 @@
 #define CABIN_BACK_LIGHTS  3
 
 // Limit switches
-// #define BOOM_LOW_LIMIT
-// #define BOOM_HIGH_LIMIT
-#define BUCKET_ROLL_IN_LIMIT  GPIO_NUM_14
-#define BUCKET_ROLL_OUT_LIMIT GPIO_NUM_13
-#define STICK_ROLL_IN_LIMIT   GPIO_NUM_11
-#define STICK_ROLL_OUT_LIMIT  GPIO_NUM_10
-#define SWING_CENTER_SWITCH   GPIO_NUM_19
+#define BOOM_LOW_LIMIT        GPIO_NUM_19
+#define BOOM_HIGH_LIMIT       GPIO_NUM_23
+#define BUCKET_ROLL_IN_LIMIT  GPIO_NUM_33
+#define BUCKET_ROLL_OUT_LIMIT GPIO_NUM_25
+#define STICK_ROLL_IN_LIMIT   GPIO_NUM_27
+#define STICK_ROLL_OUT_LIMIT  GPIO_NUM_14
+#define SWING_CENTER_SWITCH   GPIO_NUM_32
 
 // Motor driver pins connected to PCA9685
 #define BOOM_MOTOR_POS         14

@@ -7,12 +7,12 @@ build_flags =
     -D OTA_PASSWORD=\"topsecret\"
 
 ; Optionally predefine upload_port and upload_speed
-; [env:esp32-s3-devkitc-1]
+; [env:esp-32s]
 ; monitor_port = COM16
 ; upload_speed = 921600
 ; upload_port = COM16
 
-[env:esp32-s3-devkitc-1-ota]
+[env:esp-32s-ota]
 upload_port = Liebherr-R980-Excavator
 upload_flags =
     --auth=topsecret

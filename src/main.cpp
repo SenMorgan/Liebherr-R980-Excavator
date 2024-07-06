@@ -1,5 +1,4 @@
 #include <WiFi.h>
-#include "driver/temp_sensor.h"
 
 #include "constants.h"
 #include "data_structures.h"
@@ -22,25 +21,7 @@ controller_data_struct receivedData;
 // Create a variable to store the data that will be sent to the Controller
 excavator_data_struct dataToSend;
 
-int16_t cpuTemp = -999;
 uint32_t lastTempReadTime = 0;
-
-void initTempSensor()
-{
-    temp_sensor_config_t temp_sensor = TSENS_CONFIG_DEFAULT();
-    // TSENS_DAC_L2 is default; L4(-40°C ~ 20°C), L2(-10°C ~ 80°C), L1(20°C ~ 100°C), L0(50°C ~ 125°C)
-    temp_sensor.dac_offset = TSENS_DAC_L2;
-    temp_sensor_set_config(temp_sensor);
-    temp_sensor_start();
-}
-
-int16_t getCpuTemp()
-{
-    static float cpuTempF = 0.0;
-    temp_sensor_read_celsius(&cpuTempF);
-    // Multiply temperature by 100 to keep 2 decimal places
-    return (int16_t)(cpuTempF * 100.0);
-}
 
 // Callback when data from Controller received
 void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int len)
@@ -88,6 +69,9 @@ void setup()
     pinMode(BOOM_LIGHTS, OUTPUT);
     digitalWrite(BOOM_LIGHTS, HIGH);
 
+    // Init Serial Monitor
+    Serial.begin(115200);
+
     // Setup PWM
     pwmTaskInit();
 
@@ -95,12 +79,6 @@ void setup()
     // boomMotor.setupLimitSwitches(BOOM_LOW_LIMIT, BOOM_HIGH_LIMIT);
     bucketMotor.setupLimitSwitches(BUCKET_ROLL_IN_LIMIT, BUCKET_ROLL_OUT_LIMIT);
     stickMotor.setupLimitSwitches(STICK_ROLL_IN_LIMIT, STICK_ROLL_OUT_LIMIT);
-
-    // Init Temp Sensor
-    initTempSensor();
-
-    // Init Serial Monitor
-    Serial.begin(115200);
 
     // Init Wi-Fi and OTA
     setupWiFi();
@@ -118,13 +96,6 @@ void setup()
 void loop()
 {
     handleOTA();
-
-    // Read CPU temperature every
-    if (millis() - lastTempReadTime > TEMP_READ_INTERVAL)
-    {
-        lastTempReadTime = millis();
-        cpuTemp = getCpuTemp();
-    }
 
     static bool lastPosLimitState = false;
     static bool lastNegLimitState = false;
