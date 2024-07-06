@@ -76,7 +76,7 @@ void setup()
     pwmTaskInit();
 
     // Setup motors
-    // boomMotor.setupLimitSwitches(BOOM_LOW_LIMIT, BOOM_HIGH_LIMIT);
+    boomMotor.setupLimitSwitches(BOOM_LOW_LIMIT, BOOM_HIGH_LIMIT);
     bucketMotor.setupLimitSwitches(BUCKET_ROLL_IN_LIMIT, BUCKET_ROLL_OUT_LIMIT);
     stickMotor.setupLimitSwitches(STICK_ROLL_IN_LIMIT, STICK_ROLL_OUT_LIMIT);
 
