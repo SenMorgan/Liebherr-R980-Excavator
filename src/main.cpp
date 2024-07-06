@@ -21,8 +21,6 @@ controller_data_struct receivedData;
 // Create a variable to store the data that will be sent to the Controller
 excavator_data_struct dataToSend;
 
-uint32_t lastTempReadTime = 0;
-
 // Callback when data from Controller received
 void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int len)
 {
