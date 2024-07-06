@@ -73,7 +73,7 @@ void setup()
     // Setup PWM
     pwmTaskInit();
 
-    // Setup motors
+    // Setup limit switches
     boomMotor.setupLimitSwitches(BOOM_LOW_LIMIT, BOOM_HIGH_LIMIT);
     bucketMotor.setupLimitSwitches(BUCKET_ROLL_IN_LIMIT, BUCKET_ROLL_OUT_LIMIT);
     stickMotor.setupLimitSwitches(STICK_ROLL_IN_LIMIT, STICK_ROLL_OUT_LIMIT);
@@ -81,6 +81,7 @@ void setup()
     // Init Wi-Fi and OTA
     setupWiFi();
     setupOTA();
+
     // Init ESP-NOW
     initEspNow();
 
@@ -95,17 +96,11 @@ void loop()
 {
     handleOTA();
 
-    static bool lastPosLimitState = false;
-    static bool lastNegLimitState = false;
+    // Update limit switches
+    boomMotor.updateLimitSwitches();
+    bucketMotor.updateLimitSwitches();
+    stickMotor.updateLimitSwitches();
 
-    if (bucketMotor.posLimitReached != lastPosLimitState)
-    {
-        lastPosLimitState = bucketMotor.posLimitReached;
-        Serial.println("Positive limit reached: " + String(lastPosLimitState));
-    }
-    if (bucketMotor.negLimitReached != lastNegLimitState)
-    {
-        lastNegLimitState = bucketMotor.negLimitReached;
-        Serial.println("Negative limit reached: " + String(lastNegLimitState));
-    }
+    // Delay for some time to avoid high CPU usage
+    delay(10);
 }

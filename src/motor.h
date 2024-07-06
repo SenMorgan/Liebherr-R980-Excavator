@@ -9,24 +9,31 @@ class Motor
 {
 public:
     Motor(uint8_t posMotorPin, uint8_t negMotorPin, bool breakMode = true, bool reverse = false);
-    void setupLimitSwitches(gpio_num_t posLimitPin, gpio_num_t negLimitPin);
+    void setupLimitSwitches(gpio_num_t posLimitPin, gpio_num_t negLimitPin, uint32_t debounceTime = 50);
+    void updateLimitSwitches(bool stopOnLimit = true);
     void setSpeed(int16_t speed);
     void stop(void);
     void stopImmediate(void);
 
-    volatile bool posLimitReached;
-    volatile bool negLimitReached;
+    // Limit switch flags
+    bool posLimitReached, negLimitReached;
 
 private:
+    // Limit switch interrupt handlers
     void _handlePosLimitReached();
     void _handleNegLimitReached();
 
-    uint8_t _posMotorPin;
-    uint8_t _negMotorPin;
-    gpio_num_t _posLimitPin;
-    gpio_num_t _negLimitPin;
+    // Motor variables
+    uint8_t _posMotorPin, _negMotorPin;
     bool _breakMode;
     bool _reverse;
+
+    // Limit switch variables
+    gpio_num_t _posLimitPin, _negLimitPin;
+    bool _lastPosLimitState, _lastNegLimitState;
+    volatile bool _posLimitState, _negLimitState;
+    uint32_t _lastPosLimitTriggerTime, _lastNegLimitTriggerTime;
+    uint32_t _debounceTime;
 };
 
 #endif
