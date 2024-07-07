@@ -12,6 +12,16 @@
 
 #include <Arduino.h>
 
+enum LightMode
+{
+    OFF,
+    FRONT_LIGHTS,
+    FRONT_BACK_LIGHTS,
+    FRONT_BACK_SIDES_LIGHTS,
+    ALL_LIGHTS,
+    ALL_LIGHTS_WITH_BLINKING
+};
+
 enum LightControlMethod
 {
     DIRECT_GPIO,
@@ -41,5 +51,6 @@ extern Light leftLight;
 extern Light rightLight;
 
 void lightsTaskInit();
+void nextLightMode();
 
 #endif // LIGHTS_H

@@ -43,6 +43,8 @@ Light rightLight = {EXPANDER, .expPin = RIGHT_LIGHT};
 // Global array of all lights
 Light lights[NUM_LIGHTS] = {boomLights, cabinFrontLights, cabinBackLights, leftLight, rightLight};
 
+LightMode currentLightMode = ALL_LIGHTS_WITH_BLINKING;
+
 /**
  * @brief Set the brightness of a light depending on the control method.
  *
@@ -84,6 +86,88 @@ void _updateLight(Light *light)
 }
 
 /**
+ * @brief Updates the lights states based on the current light mode.
+ */
+void _updateLightsMode()
+{
+#define BLINK_INTERVAL_MS 500
+    static uint32_t lastBlinkTime = 0;
+    static bool blinkState = false;
+
+    // Update lights based on the current mode
+    switch (currentLightMode)
+    {
+        case OFF:
+            // Turn off all lights
+            boomLights.targetPWM = PWM_OFF;
+            cabinFrontLights.targetPWM = PWM_OFF;
+            cabinBackLights.targetPWM = PWM_OFF;
+            leftLight.targetPWM = PWM_OFF;
+            rightLight.targetPWM = PWM_OFF;
+            break;
+        case FRONT_LIGHTS:
+            // Turn on only front lights
+            cabinFrontLights.targetPWM = PWM_ON;
+            break;
+        case FRONT_BACK_LIGHTS:
+            // Turn on front and back lights
+            cabinFrontLights.targetPWM = PWM_ON;
+            cabinBackLights.targetPWM = PWM_ON;
+            break;
+        case FRONT_BACK_SIDES_LIGHTS:
+            // Turn on front, back, left, and right lights
+            cabinFrontLights.targetPWM = PWM_ON;
+            cabinBackLights.targetPWM = PWM_ON;
+            leftLight.targetPWM = PWM_ON;
+            rightLight.targetPWM = PWM_ON;
+            break;
+        case ALL_LIGHTS:
+            // Turn on all lights
+            boomLights.targetPWM = PWM_ON;
+            cabinFrontLights.targetPWM = PWM_ON;
+            cabinBackLights.targetPWM = PWM_ON;
+            leftLight.targetPWM = PWM_ON;
+            rightLight.targetPWM = PWM_ON;
+            break;
+        case ALL_LIGHTS_WITH_BLINKING:
+            // All lights on, but left and right lights blink
+            boomLights.targetPWM = PWM_ON;
+            cabinFrontLights.targetPWM = PWM_ON;
+            cabinBackLights.targetPWM = PWM_ON;
+
+            if (millis() - lastBlinkTime >= BLINK_INTERVAL_MS)
+            {
+                lastBlinkTime = millis();
+                blinkState = !blinkState;
+
+                if (blinkState)
+                {
+                    leftLight.targetPWM = PWM_ON;
+                    rightLight.targetPWM = PWM_OFF;
+                }
+                else
+                {
+                    leftLight.targetPWM = PWM_OFF;
+                    rightLight.targetPWM = PWM_ON;
+                }
+            }
+            break;
+    }
+}
+
+/**
+ * @brief Changes the light mode to the next mode in the sequence.
+ *
+ * This function updates the current light mode to the next mode in the sequence.
+ * If the current mode is the last mode, it wraps around to the first mode.
+ */
+void nextLightMode()
+{
+    currentLightMode = static_cast<LightMode>((currentLightMode + 1) % (ALL_LIGHTS_WITH_BLINKING + 1));
+    Serial.printf("Light mode changed to %d\n", currentLightMode);
+}
+
+/**
  * @brief Task function for controlling the lights.
  *
  * This task initializes the lights and continuously updates their states based on the target PWM values.
@@ -121,6 +205,8 @@ void lightsTask(void *pvParameters)
         _updateLight(&cabinBackLights);
         _updateLight(&leftLight);
         _updateLight(&rightLight);
+
+        _updateLightsMode();
 
         // Wait for the next cycle.
         vTaskDelayUntil(&xLastWakeTime, xFrequency);

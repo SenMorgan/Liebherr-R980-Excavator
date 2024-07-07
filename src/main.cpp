@@ -25,6 +25,8 @@ excavator_data_struct dataToSend;
 // Callback when data from Controller received
 void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int len)
 {
+    static uint8_t previousLightsState = 0;
+
     memcpy(&receivedData, incomingData, sizeof(receivedData));
     Serial.printf("Received from Controller: Boom: %3d | Bucket: %3d | Stick: %3d | Swing: %3d | "
                   "Track Left: %3d | Track Right: %3d | Lights: %d | Center Swing: %d | Battery: %3d\n",
@@ -41,23 +43,10 @@ void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int l
     rightTravelMotor.setSpeed(receivedData.leverPositions[5]);
 
     // Control lights
-    if (receivedData.buttonsStates[0])
+    if (previousLightsState != receivedData.buttonsStates[0])
     {
-        Serial.println("Turning lights ON");
-        boomLights.targetPWM = PWM_ON;
-        cabinFrontLights.targetPWM = PWM_ON;
-        cabinBackLights.targetPWM = PWM_ON;
-        leftLight.targetPWM = PWM_ON;
-        rightLight.targetPWM = PWM_ON;
-    }
-    else
-    {
-        Serial.println("Turning lights OFF");
-        boomLights.targetPWM = PWM_OFF;
-        cabinFrontLights.targetPWM = PWM_OFF;
-        cabinBackLights.targetPWM = PWM_OFF;
-        leftLight.targetPWM = PWM_OFF;
-        rightLight.targetPWM = PWM_OFF;
+        previousLightsState = receivedData.buttonsStates[0];
+        nextLightMode();
     }
 }
 
