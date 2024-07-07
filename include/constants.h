@@ -26,8 +26,8 @@
 // Lights connected to PCA9685
 #define LEFT_LIGHT         0
 #define RIGHT_LIGHT        1
-#define CABIN_FRONT_LIGHTS 2
-#define CABIN_BACK_LIGHTS  3
+#define CABIN_BACK_LIGHTS  2
+#define CABIN_FRONT_LIGHTS 3
 
 // Limit switches
 #define BOOM_LOW_LIMIT        GPIO_NUM_19
