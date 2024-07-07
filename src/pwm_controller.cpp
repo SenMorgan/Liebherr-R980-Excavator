@@ -11,6 +11,7 @@
 #include <SPI.h>
 #include <Adafruit_PWMServoDriver.h>
 
+#define MAX_PWM_VALUE       4095
 #define PWM_TASK_STACK_SIZE (2 * 1024U)
 #define PWM_TASK_PRIORITY   (tskIDLE_PRIORITY + 2)
 #define PWM_TASK_CORE       1 // Core 0 is used by the WiFi
@@ -22,9 +23,9 @@
 struct PWMdata
 {
     uint8_t pin1;
-    uint8_t value1;
+    uint16_t value1;
     uint8_t pin2;
-    uint8_t value2;
+    uint16_t value2;
 };
 
 QueueHandle_t pwmDataQueue;
@@ -51,12 +52,12 @@ void pwmTask(void *pvParameters)
         {
             if (pwmData.pin1 != PWM_NC_PIN)
             {
-                uint16_t pwmValue = map(pwmData.value1, 0, 255, 0, 4095);
+                uint16_t pwmValue = map(pwmData.value1, 0, PWM_ON, 0, MAX_PWM_VALUE);
                 pwm.setPWM(pwmData.pin1, 0, pwmValue);
             }
             if (pwmData.pin2 != PWM_NC_PIN)
             {
-                uint16_t pwmValue = map(pwmData.value2, 0, 255, 0, 4095);
+                uint16_t pwmValue = map(pwmData.value2, 0, PWM_ON, 0, MAX_PWM_VALUE);
                 pwm.setPWM(pwmData.pin2, 0, pwmValue);
             }
         }
@@ -77,11 +78,11 @@ void pwmTaskInit(void)
                                           NULL,
                                           PWM_TASK_CORE))
     {
-        Serial.println("Failed to create pwm_task");
+        Serial.println("Failed to create pwmTask");
     }
 }
 
-void setPinPWM(uint8_t pin, uint8_t value)
+void setPinPWM(uint8_t pin, uint16_t value)
 {
     PWMdata pwm;
     pwm.pin1 = pin;
@@ -96,7 +97,7 @@ void setPinPWM(uint8_t pin, uint8_t value)
     }
 }
 
-void setMotorPwm(uint8_t posMotorPin, uint8_t negMotorPin, uint8_t posPinValue, uint8_t negPinValue, bool immediate)
+void setMotorPwm(uint8_t posMotorPin, uint8_t negMotorPin, uint16_t posPinValue, uint16_t negPinValue, bool immediate)
 {
     PWMdata pwm;
     pwm.pin1 = posMotorPin;
