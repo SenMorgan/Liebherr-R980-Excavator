@@ -3,6 +3,7 @@
 #include "constants.h"
 #include "data_structures.h"
 #include "esp_now_manager.h"
+#include "lights.h"
 #include "motor.h"
 #include "pwm_controller.h"
 #include "wifi_ota_manager.h"
@@ -42,19 +43,21 @@ void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int l
     // Control lights
     if (receivedData.buttonsStates[0])
     {
-        digitalWrite(BOOM_LIGHTS, HIGH);
-        setPinPWM(CABIN_FRONT_LIGHTS, PWM_ON);
-        setPinPWM(CABIN_BACK_LIGHTS, PWM_ON);
-        setPinPWM(LEFT_LIGHT, PWM_ON);
-        setPinPWM(RIGHT_LIGHT, PWM_ON);
+        Serial.println("Turning lights ON");
+        boomLights.targetPWM = PWM_ON;
+        cabinFrontLights.targetPWM = PWM_ON;
+        cabinBackLights.targetPWM = PWM_ON;
+        leftLight.targetPWM = PWM_ON;
+        rightLight.targetPWM = PWM_ON;
     }
     else
     {
-        digitalWrite(BOOM_LIGHTS, LOW);
-        setPinPWM(CABIN_FRONT_LIGHTS, PWM_OFF);
-        setPinPWM(CABIN_BACK_LIGHTS, PWM_OFF);
-        setPinPWM(LEFT_LIGHT, PWM_OFF);
-        setPinPWM(RIGHT_LIGHT, PWM_OFF);
+        Serial.println("Turning lights OFF");
+        boomLights.targetPWM = PWM_OFF;
+        cabinFrontLights.targetPWM = PWM_OFF;
+        cabinBackLights.targetPWM = PWM_OFF;
+        leftLight.targetPWM = PWM_OFF;
+        rightLight.targetPWM = PWM_OFF;
     }
 }
 
@@ -63,15 +66,14 @@ void setup()
     // Setup pins
     pinMode(SWING_CENTER_SWITCH, INPUT_PULLUP);
 
-    // pinMode(RGB_LED_BUILTIN, OUTPUT);
-    pinMode(BOOM_LIGHTS, OUTPUT);
-    digitalWrite(BOOM_LIGHTS, HIGH);
-
     // Init Serial Monitor
     Serial.begin(115200);
 
     // Setup PWM
     pwmTaskInit();
+
+    // Setup lights
+    lightsTaskInit();
 
     // Setup limit switches
     boomMotor.setupLimitSwitches(BOOM_LOW_LIMIT, BOOM_HIGH_LIMIT);
