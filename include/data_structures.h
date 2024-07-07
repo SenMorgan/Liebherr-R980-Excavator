@@ -44,7 +44,6 @@ typedef struct excavator_data_struct
 {
     uint16_t uptime;  // Uptime of the Excavator in seconds
     uint16_t battery; // Battery level of the Excavator
-    int16_t cpuTemp;  // CPU temperature of the Excavator
 } excavator_data_struct;
 
 #endif // DATA_STRUCTURES_H
