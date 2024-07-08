@@ -17,39 +17,39 @@
 #define BUTTONS_COUNT 2
 
 // IO pins
-#define MOTOR_DRIVER_FAULT GPIO_NUM_16
-#define MOTOR_DRIVER_SLEEP GPIO_NUM_17
+#define MOTOR_DRIVER_FAULT_PIN GPIO_NUM_16
+#define MOTOR_DRIVER_SLEEP_PIN GPIO_NUM_17
 
 // Lights
 #define BOOM_LIGHTS_PIN GPIO_NUM_26
 
-// Lights connected to PCA9685
+// Lights connected via expander
 #define LEFT_HEADLIGHT_PIN    0
 #define RIGHT_HEADLIGHT_PIN   1
 #define ROOF_BACK_LIGHTS_PIN  2
 #define ROOF_FRONT_LIGHTS_PIN 3
 
 // Limit switches
-#define BOOM_LOW_LIMIT        GPIO_NUM_19
-#define BOOM_HIGH_LIMIT       GPIO_NUM_23
-#define BUCKET_ROLL_IN_LIMIT  GPIO_NUM_33
-#define BUCKET_ROLL_OUT_LIMIT GPIO_NUM_25
-#define STICK_ROLL_IN_LIMIT   GPIO_NUM_27
-#define STICK_ROLL_OUT_LIMIT  GPIO_NUM_14
-#define SWING_CENTER_SWITCH   GPIO_NUM_32
+#define BOOM_LOW_LIMIT_PIN        GPIO_NUM_19
+#define BOOM_HIGH_LIMIT_PIN       GPIO_NUM_23
+#define BUCKET_ROLL_IN_LIMIT_PIN  GPIO_NUM_33
+#define BUCKET_ROLL_OUT_LIMIT_PIN GPIO_NUM_25
+#define STICK_ROLL_IN_LIMIT_PIN   GPIO_NUM_27
+#define STICK_ROLL_OUT_LIMIT_PIN  GPIO_NUM_14
+#define SWING_CENTER_SWITCH_PIN   GPIO_NUM_32
 
-// Motor driver pins connected to PCA9685
-#define BOOM_MOTOR_POS         14
-#define BOOM_MOTOR_NEG         15
-#define BUCKET_MOTOR_POS       10
-#define BUCKET_MOTOR_NEG       11
-#define STICK_MOTOR_POS        9
-#define STICK_MOTOR_NEG        8
-#define SWING_MOTOR_POS        12
-#define SWING_MOTOR_NEG        13
-#define LEFT_TRAVEL_MOTOR_POS  6
-#define LEFT_TRAVEL_MOTOR_NEG  7
-#define RIGHT_TRAVEL_MOTOR_POS 5
-#define RIGHT_TRAVEL_MOTOR_NEG 4
+// Motor driver pins connected via expander
+#define BOOM_MOTOR_POS_PIN         14
+#define BOOM_MOTOR_NEG_PIN         15
+#define BUCKET_MOTOR_POS_PIN       10
+#define BUCKET_MOTOR_NEG_PIN       11
+#define STICK_MOTOR_POS_PIN        9
+#define STICK_MOTOR_NEG_PIN        8
+#define SWING_MOTOR_POS_PIN        12
+#define SWING_MOTOR_NEG_PIN        13
+#define LEFT_TRAVEL_MOTOR_POS_PIN  6
+#define LEFT_TRAVEL_MOTOR_NEG_PIN  7
+#define RIGHT_TRAVEL_MOTOR_POS_PIN 5
+#define RIGHT_TRAVEL_MOTOR_NEG_PIN 4
 
 #endif // _CONSTANTS_H

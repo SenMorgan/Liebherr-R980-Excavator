@@ -9,12 +9,12 @@
 #include "wifi_ota_manager.h"
 
 // Create Motor objects for each motor
-Motor boomMotor(BOOM_MOTOR_POS, BOOM_MOTOR_NEG);
-Motor bucketMotor(BUCKET_MOTOR_POS, BUCKET_MOTOR_NEG);
-Motor stickMotor(STICK_MOTOR_POS, STICK_MOTOR_NEG, true, true);
-Motor swingMotor(SWING_MOTOR_POS, SWING_MOTOR_NEG, false, true);
-Motor leftTravelMotor(LEFT_TRAVEL_MOTOR_POS, LEFT_TRAVEL_MOTOR_NEG, false);
-Motor rightTravelMotor(RIGHT_TRAVEL_MOTOR_POS, RIGHT_TRAVEL_MOTOR_NEG, false);
+Motor boomMotor(BOOM_MOTOR_POS_PIN, BOOM_MOTOR_NEG_PIN);
+Motor bucketMotor(BUCKET_MOTOR_POS_PIN, BUCKET_MOTOR_NEG_PIN);
+Motor stickMotor(STICK_MOTOR_POS_PIN, STICK_MOTOR_NEG_PIN, true, true);
+Motor swingMotor(SWING_MOTOR_POS_PIN, SWING_MOTOR_NEG_PIN, false, true);
+Motor leftTravelMotor(LEFT_TRAVEL_MOTOR_POS_PIN, LEFT_TRAVEL_MOTOR_NEG_PIN, false);
+Motor rightTravelMotor(RIGHT_TRAVEL_MOTOR_POS_PIN, RIGHT_TRAVEL_MOTOR_NEG_PIN, false);
 
 // Create a variable to store the received data
 controller_data_struct receivedData;
@@ -53,7 +53,7 @@ void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int l
 void setup()
 {
     // Setup pins
-    pinMode(SWING_CENTER_SWITCH, INPUT_PULLUP);
+    pinMode(SWING_CENTER_SWITCH_PIN, INPUT_PULLUP);
 
     // Init Serial Monitor
     Serial.begin(115200);
@@ -65,9 +65,9 @@ void setup()
     lightsTaskInit();
 
     // Setup limit switches
-    boomMotor.setupLimitSwitches(BOOM_LOW_LIMIT, BOOM_HIGH_LIMIT);
-    bucketMotor.setupLimitSwitches(BUCKET_ROLL_IN_LIMIT, BUCKET_ROLL_OUT_LIMIT);
-    stickMotor.setupLimitSwitches(STICK_ROLL_IN_LIMIT, STICK_ROLL_OUT_LIMIT);
+    boomMotor.setupLimitSwitches(BOOM_LOW_LIMIT_PIN, BOOM_HIGH_LIMIT_PIN);
+    bucketMotor.setupLimitSwitches(BUCKET_ROLL_IN_LIMIT_PIN, BUCKET_ROLL_OUT_LIMIT_PIN);
+    stickMotor.setupLimitSwitches(STICK_ROLL_IN_LIMIT_PIN, STICK_ROLL_OUT_LIMIT_PIN);
 
     // Init Wi-Fi and OTA
     setupWiFi();
