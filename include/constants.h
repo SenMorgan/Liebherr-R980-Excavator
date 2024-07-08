@@ -21,13 +21,13 @@
 #define MOTOR_DRIVER_SLEEP GPIO_NUM_17
 
 // Lights
-#define BOOM_LIGHTS GPIO_NUM_26
+#define BOOM_LIGHTS_PIN GPIO_NUM_26
 
 // Lights connected to PCA9685
-#define LEFT_LIGHT         0
-#define RIGHT_LIGHT        1
-#define CABIN_BACK_LIGHTS  2
-#define CABIN_FRONT_LIGHTS 3
+#define LEFT_HEADLIGHT_PIN    0
+#define RIGHT_HEADLIGHT_PIN   1
+#define ROOF_BACK_LIGHTS_PIN  2
+#define ROOF_FRONT_LIGHTS_PIN 3
 
 // Limit switches
 #define BOOM_LOW_LIMIT        GPIO_NUM_19

@@ -28,6 +28,17 @@ enum LightControlMethod
     EXPANDER
 };
 
+enum
+{
+    BOOM_LIGHTS,
+    ROOF_FRONT_LIGHTS,
+    ROOF_BACK_LIGHTS,
+    LEFT_HEADLIGHT,
+    RIGHT_HEADLIGHT,
+    // Total number of lights
+    NUM_LIGHTS
+};
+
 struct Light
 {
     LightControlMethod controlMethod; // Specifies the type of light
@@ -43,12 +54,6 @@ struct Light
     uint16_t targetPWM;  // Desired PWM value
     uint16_t currentPWM; // Current PWM value
 };
-
-extern Light boomLights;
-extern Light cabinFrontLights;
-extern Light cabinBackLights;
-extern Light leftLight;
-extern Light rightLight;
 
 void lightsTaskInit();
 void nextLightMode();

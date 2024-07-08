@@ -14,7 +14,6 @@
 #include "pwm_controller.h"
 
 // Light parameters
-#define NUM_LIGHTS                 5     // Total number of lights
 #define LIGHTS_CHANGE_RATE         100   // Rate at which the brightness of the lights changes (PWM units per cycle)
 #define LIGHTS_GPIO_PWM_FREQUENCY  12000 // PWM frequency for GPIO-controlled lights
 #define LIGHTS_GPIO_PWM_RESOLUTION 10    // PWM resolution for GPIO-controlled lights
@@ -33,15 +32,13 @@
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 #endif
 
-// Light objects
-Light boomLights = {DIRECT_GPIO, .gpio = {BOOM_LIGHTS, LEDC_CHANNEL_0}};
-Light cabinFrontLights = {EXPANDER, .expPin = CABIN_FRONT_LIGHTS};
-Light cabinBackLights = {EXPANDER, .expPin = CABIN_BACK_LIGHTS};
-Light leftLight = {EXPANDER, .expPin = LEFT_LIGHT};
-Light rightLight = {EXPANDER, .expPin = RIGHT_LIGHT};
-
 // Global array of all lights
-Light lights[NUM_LIGHTS] = {boomLights, cabinFrontLights, cabinBackLights, leftLight, rightLight};
+Light lights[NUM_LIGHTS] = {
+    [BOOM_LIGHTS] = {.controlMethod = DIRECT_GPIO, .gpio = {BOOM_LIGHTS_PIN, LEDC_CHANNEL_0}},
+    [ROOF_FRONT_LIGHTS] = {.controlMethod = EXPANDER, .expPin = ROOF_FRONT_LIGHTS_PIN},
+    [ROOF_BACK_LIGHTS] = {.controlMethod = EXPANDER, .expPin = ROOF_BACK_LIGHTS_PIN},
+    [LEFT_HEADLIGHT] = {.controlMethod = EXPANDER, .expPin = LEFT_HEADLIGHT_PIN},
+    [RIGHT_HEADLIGHT] = {.controlMethod = EXPANDER, .expPin = RIGHT_HEADLIGHT_PIN}};
 
 LightMode currentLightMode = ALL_LIGHTS_WITH_BLINKING;
 
@@ -99,41 +96,35 @@ void _updateLightsMode()
     {
         case OFF:
             // Turn off all lights
-            boomLights.targetPWM = PWM_OFF;
-            cabinFrontLights.targetPWM = PWM_OFF;
-            cabinBackLights.targetPWM = PWM_OFF;
-            leftLight.targetPWM = PWM_OFF;
-            rightLight.targetPWM = PWM_OFF;
+            for (int i = 0; i < NUM_LIGHTS; ++i)
+                lights[i].targetPWM = PWM_OFF;
             break;
         case FRONT_LIGHTS:
             // Turn on only front lights
-            cabinFrontLights.targetPWM = PWM_ON;
+            lights[ROOF_FRONT_LIGHTS].targetPWM = PWM_ON;
             break;
         case FRONT_BACK_LIGHTS:
             // Turn on front and back lights
-            cabinFrontLights.targetPWM = PWM_ON;
-            cabinBackLights.targetPWM = PWM_ON;
+            lights[ROOF_FRONT_LIGHTS].targetPWM = PWM_ON;
+            lights[ROOF_BACK_LIGHTS].targetPWM = PWM_ON;
             break;
         case FRONT_BACK_SIDES_LIGHTS:
             // Turn on front, back, left, and right lights
-            cabinFrontLights.targetPWM = PWM_ON;
-            cabinBackLights.targetPWM = PWM_ON;
-            leftLight.targetPWM = PWM_ON;
-            rightLight.targetPWM = PWM_ON;
+            lights[ROOF_FRONT_LIGHTS].targetPWM = PWM_ON;
+            lights[ROOF_BACK_LIGHTS].targetPWM = PWM_ON;
+            lights[LEFT_HEADLIGHT].targetPWM = PWM_ON;
+            lights[RIGHT_HEADLIGHT].targetPWM = PWM_ON;
             break;
         case ALL_LIGHTS:
             // Turn on all lights
-            boomLights.targetPWM = PWM_ON;
-            cabinFrontLights.targetPWM = PWM_ON;
-            cabinBackLights.targetPWM = PWM_ON;
-            leftLight.targetPWM = PWM_ON;
-            rightLight.targetPWM = PWM_ON;
+            for (int i = 0; i < NUM_LIGHTS; ++i)
+                lights[i].targetPWM = PWM_ON;
             break;
         case ALL_LIGHTS_WITH_BLINKING:
             // All lights on, but left and right lights blink
-            boomLights.targetPWM = PWM_ON;
-            cabinFrontLights.targetPWM = PWM_ON;
-            cabinBackLights.targetPWM = PWM_ON;
+            lights[BOOM_LIGHTS].targetPWM = PWM_ON;
+            lights[ROOF_FRONT_LIGHTS].targetPWM = PWM_ON;
+            lights[ROOF_BACK_LIGHTS].targetPWM = PWM_ON;
 
             if (millis() - lastBlinkTime >= BLINK_INTERVAL_MS)
             {
@@ -142,13 +133,13 @@ void _updateLightsMode()
 
                 if (blinkState)
                 {
-                    leftLight.targetPWM = PWM_ON;
-                    rightLight.targetPWM = PWM_OFF;
+                    lights[LEFT_HEADLIGHT].targetPWM = PWM_ON;
+                    lights[RIGHT_HEADLIGHT].targetPWM = PWM_OFF;
                 }
                 else
                 {
-                    leftLight.targetPWM = PWM_OFF;
-                    rightLight.targetPWM = PWM_ON;
+                    lights[LEFT_HEADLIGHT].targetPWM = PWM_OFF;
+                    lights[RIGHT_HEADLIGHT].targetPWM = PWM_ON;
                 }
             }
             break;
@@ -191,20 +182,16 @@ void lightsTask(void *pvParameters)
     }
 
     // Power on boom lights by default
-    boomLights.targetPWM = PWM_ON;
+    lights[BOOM_LIGHTS].targetPWM = PWM_ON;
 
     Serial.println("lightsTask started");
 
     // Main task loop
     for (;;)
     {
-        // Update lights (need to call every light manually, cause automatic iterating
-        // over the lights array does not work by unknown reason)
-        _updateLight(&boomLights);
-        _updateLight(&cabinFrontLights);
-        _updateLight(&cabinBackLights);
-        _updateLight(&leftLight);
-        _updateLight(&rightLight);
+        // Iterate over all lights and update their brightness
+        for (int i = 0; i < NUM_LIGHTS; ++i)
+            _updateLight(&lights[i]);
 
         _updateLightsMode();
 
