@@ -13,8 +13,8 @@ Motor boomMotor(BOOM_MOTOR_POS_PIN, BOOM_MOTOR_NEG_PIN);
 Motor bucketMotor(BUCKET_MOTOR_POS_PIN, BUCKET_MOTOR_NEG_PIN);
 Motor stickMotor(STICK_MOTOR_POS_PIN, STICK_MOTOR_NEG_PIN, true, true);
 Motor swingMotor(SWING_MOTOR_POS_PIN, SWING_MOTOR_NEG_PIN, false, true);
-Motor leftTravelMotor(LEFT_TRAVEL_MOTOR_POS_PIN, LEFT_TRAVEL_MOTOR_NEG_PIN, false);
-Motor rightTravelMotor(RIGHT_TRAVEL_MOTOR_POS_PIN, RIGHT_TRAVEL_MOTOR_NEG_PIN, false);
+Motor leftTravelMotor(LEFT_TRAVEL_MOTOR_POS_PIN, LEFT_TRAVEL_MOTOR_NEG_PIN, true, true);
+Motor rightTravelMotor(RIGHT_TRAVEL_MOTOR_POS_PIN, RIGHT_TRAVEL_MOTOR_NEG_PIN, true, true);
 
 // Create a variable to store the received data
 controller_data_struct receivedData;
