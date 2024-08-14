@@ -25,14 +25,15 @@ excavator_data_struct dataToSend;
 // Callback when data from Controller received
 void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int len)
 {
-    static uint8_t previousLightsState = 0;
+    static bool lastButtonsState[BUTTONS_COUNT] = {0};
 
     memcpy(&receivedData, incomingData, sizeof(receivedData));
     Serial.printf("Received from Controller: Boom: %3d | Bucket: %3d | Stick: %3d | Swing: %3d | "
-                  "Track Left: %3d | Track Right: %3d | Lights: %d | Center Swing: %d | Battery: %3d\n",
+                  "Track Left: %3d | Track Right: %3d | Lights: %d | Center Swing: %d | Beacon: %d | Battery: %3d\n",
                   receivedData.leverPositions[0], receivedData.leverPositions[1], receivedData.leverPositions[2],
                   receivedData.leverPositions[3], receivedData.leverPositions[4], receivedData.leverPositions[5],
-                  receivedData.buttonsStates[0], receivedData.buttonsStates[1], receivedData.battery);
+                  receivedData.buttonsStates[0], receivedData.buttonsStates[1], receivedData.buttonsStates[2],
+                  receivedData.battery);
 
     // Control motors based on received data
     boomMotor.setSpeed(receivedData.leverPositions[0]);
@@ -42,11 +43,26 @@ void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int l
     leftTravelMotor.setSpeed(receivedData.leverPositions[4]);
     rightTravelMotor.setSpeed(receivedData.leverPositions[5]);
 
-    // Control lights
-    if (previousLightsState != receivedData.buttonsStates[0])
+    // Change light mode
+    if (lastButtonsState[0] != receivedData.buttonsStates[0])
     {
-        previousLightsState = receivedData.buttonsStates[0];
+        lastButtonsState[0] = receivedData.buttonsStates[0];
         nextLightMode();
+    }
+
+    // Center swing position
+    if (lastButtonsState[1] != receivedData.buttonsStates[1])
+    {
+        lastButtonsState[1] = receivedData.buttonsStates[1];
+        Serial.println("Center Swing button state changed");
+        // TODO: Implement swing center switch logic
+    }
+
+    // Change beacon light mode
+    if (lastButtonsState[2] != receivedData.buttonsStates[2])
+    {
+        lastButtonsState[2] = receivedData.buttonsStates[2];
+        beaconLightChangeMode();
     }
 }
 

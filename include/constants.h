@@ -14,14 +14,15 @@
 #define LEVERS_COUNT 6
 
 // Number of buttons
-#define BUTTONS_COUNT 2
+#define BUTTONS_COUNT 3
 
 // IO pins
 #define MOTOR_DRIVER_FAULT_PIN GPIO_NUM_16
 #define MOTOR_DRIVER_SLEEP_PIN GPIO_NUM_17
 
-// Lights
-#define BOOM_LIGHTS_PIN GPIO_NUM_26
+// Lights connected directly to ESP32
+#define BOOM_LIGHTS_PIN  GPIO_NUM_26
+#define BEACON_LIGHT_PIN GPIO_NUM_18
 
 // Lights connected via expander
 #define LEFT_HEADLIGHT_PIN    0

@@ -18,11 +18,22 @@
 #define LIGHTS_GPIO_PWM_FREQUENCY  12000 // PWM frequency for GPIO-controlled lights
 #define LIGHTS_GPIO_PWM_RESOLUTION 10    // PWM resolution for GPIO-controlled lights
 
+// Beacon light parameters
+#define BEACON_GPIO_PWM_FREQUENCY  50  // PWM frequency for beacon light
+#define BEACON_GPIO_PWM_RESOLUTION 8   // PWM resolution for beacon light
+#define BEACON_MIN_DUTY            10  // Experimentally determined minimum duty cycle for the beacon light
+#define BEACON_MAX_DUTY            27  // Experimentally determined maximum duty cycle for the beacon light
+#define BEACON_CHANGE_MODE_DELAY   250 // Minumum delay between toggling the PWM output needed for the mode change
+
 // Task parameters
 #define LIGHTS_TASK_FREQUENCY_HZ (50U)
 #define LIGHTS_TASK_STACK_SIZE   (2 * 1024U)
 #define LIGHTS_TASK_PRIORITY     (tskIDLE_PRIORITY + 1)
 #define LIGHTS_TASK_CORE         1 // Core 0 is used by the WiFi
+
+// LEDC channels
+#define BOOM_LIGHTS_CHANNEL  LEDC_CHANNEL_0
+#define BEACON_LIGHT_CHANNEL LEDC_CHANNEL_1
 
 // Helper macros
 #ifndef min
@@ -34,7 +45,7 @@
 
 // Global array of all lights
 Light lights[NUM_LIGHTS] = {
-    [BOOM_LIGHTS] = {.controlMethod = DIRECT_GPIO, .gpio = {BOOM_LIGHTS_PIN, LEDC_CHANNEL_0}},
+    [BOOM_LIGHTS] = {.controlMethod = DIRECT_GPIO, .gpio = {BOOM_LIGHTS_PIN, BOOM_LIGHTS_CHANNEL}},
     [ROOF_FRONT_LIGHTS] = {.controlMethod = EXPANDER, .expPin = ROOF_FRONT_LIGHTS_PIN},
     [ROOF_BACK_LIGHTS] = {.controlMethod = EXPANDER, .expPin = ROOF_BACK_LIGHTS_PIN},
     [LEFT_HEADLIGHT] = {.controlMethod = EXPANDER, .expPin = LEFT_HEADLIGHT_PIN},
@@ -181,6 +192,11 @@ void lightsTask(void *pvParameters)
         }
     }
 
+    // Initialize the beacon light
+    ledcAttachPin(BEACON_LIGHT_PIN, BEACON_LIGHT_CHANNEL);
+    ledcSetup(BEACON_LIGHT_CHANNEL, BEACON_GPIO_PWM_FREQUENCY, BEACON_GPIO_PWM_RESOLUTION);
+    ledcWrite(BEACON_LIGHT_CHANNEL, BEACON_MIN_DUTY);
+
     // Power on boom lights by default
     lights[BOOM_LIGHTS].targetPWM = PWM_ON;
 
@@ -219,4 +235,14 @@ void lightsTaskInit(void)
     {
         Serial.println("Failed to create lightsTask");
     }
+}
+
+void beaconLightChangeMode()
+{
+    Serial.println("Beacon light mode changed");
+
+    // Change the beacon light mode by toggling the PWM output between min and max duty cycle
+    ledcWrite(BEACON_LIGHT_CHANNEL, BEACON_MAX_DUTY);
+    delay(BEACON_CHANGE_MODE_DELAY);
+    ledcWrite(BEACON_LIGHT_CHANNEL, BEACON_MIN_DUTY);
 }

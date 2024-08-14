@@ -57,5 +57,6 @@ struct Light
 
 void lightsTaskInit();
 void nextLightMode();
+void beaconLightChangeMode();
 
 #endif // LIGHTS_H
