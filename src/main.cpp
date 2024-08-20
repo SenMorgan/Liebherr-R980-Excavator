@@ -5,6 +5,7 @@
 #include "esp_now_manager.h"
 #include "lights.h"
 #include "motor.h"
+#include "power_manager.h"
 #include "pwm_controller.h"
 #include "wifi_ota_manager.h"
 
@@ -79,6 +80,9 @@ void setup()
 
     // Setup lights
     lightsTaskInit();
+
+    // Setup power manager
+    powerManagerTaskInit();
 
     // Setup limit switches
     boomMotor.setupLimitSwitches(BOOM_LOW_LIMIT_PIN, BOOM_HIGH_LIMIT_PIN);
