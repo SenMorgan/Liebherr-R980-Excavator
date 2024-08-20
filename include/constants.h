@@ -19,10 +19,11 @@
 // IO pins
 #define MOTOR_DRIVER_FAULT_PIN GPIO_NUM_16
 #define MOTOR_DRIVER_SLEEP_PIN GPIO_NUM_17
+#define EXTRA_IO_PIN           GPIO_NUM_14
 
 // Lights connected directly to ESP32
 #define BOOM_LIGHTS_PIN  GPIO_NUM_26
-#define BEACON_LIGHT_PIN GPIO_NUM_18
+#define BEACON_LIGHT_PIN GPIO_NUM_13
 
 // Lights connected via expander
 #define LEFT_HEADLIGHT_PIN    0
@@ -36,7 +37,7 @@
 #define BUCKET_ROLL_IN_LIMIT_PIN  GPIO_NUM_33
 #define BUCKET_ROLL_OUT_LIMIT_PIN GPIO_NUM_25
 #define STICK_ROLL_IN_LIMIT_PIN   GPIO_NUM_27
-#define STICK_ROLL_OUT_LIMIT_PIN  GPIO_NUM_14
+#define STICK_ROLL_OUT_LIMIT_PIN  GPIO_NUM_12
 #define SWING_CENTER_SWITCH_PIN   GPIO_NUM_32
 
 // Motor driver pins connected via expander
