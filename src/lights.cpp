@@ -33,7 +33,7 @@
 
 // LEDC channels
 #define BOOM_LIGHTS_CHANNEL  LEDC_CHANNEL_0
-#define BEACON_LIGHT_CHANNEL LEDC_CHANNEL_1
+#define BEACON_LIGHT_CHANNEL LEDC_CHANNEL_2 // Use channel 2 to use another timer with another frequency
 
 // Helper macros
 #ifndef min
