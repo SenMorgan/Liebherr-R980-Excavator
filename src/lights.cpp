@@ -212,7 +212,7 @@ void lightsTask(void *pvParameters)
         _updateLightsMode();
 
         // Wait for the next cycle.
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        xTaskDelayUntil(&xLastWakeTime, xFrequency);
     }
 }
 
