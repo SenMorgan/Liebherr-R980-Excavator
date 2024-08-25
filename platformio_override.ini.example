@@ -9,6 +9,7 @@ build_flags =
 ; Optionally predefine upload_port and upload_speed
 ; [env:esp-32s]
 ; monitor_port = COM16
+; monitor_filters = time
 ; upload_speed = 921600
 ; upload_port = COM16
 
