@@ -65,6 +65,10 @@ void onDataFromController(const uint8_t *mac, const uint8_t *incomingData, int l
         lastButtonsState[2] = receivedData.buttonsStates[2];
         beaconLightChangeMode();
     }
+
+    // Update and send data to Controller
+    dataToSend.uptime = millis() / 1000;
+    sendDataToController(dataToSend);
 }
 
 void setup()

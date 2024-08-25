@@ -7,9 +7,9 @@
  *
  */
 
-#include "power_manager.h"
-
 #include "constants.h"
+#include <data_structures.h>
+#include "power_manager.h"
 
 // Interval between battery voltage readings
 #define READ_BATTERY_INTERVAL_MS 1000
@@ -24,6 +24,8 @@
 #define POWER_MANAGER_TASK_FREQUENCY_HZ (50U)
 #define POWER_MANAGER_TASK_STACK_SIZE   (2 * 1024U)
 #define POWER_MANAGER_TASK_PRIORITY     (tskIDLE_PRIORITY + 1)
+
+extern excavator_data_struct dataToSend;
 
 uint32_t lastBatteryReadTime = 0;
 
@@ -44,9 +46,7 @@ uint16_t getAveragedBattVoltage()
     uint16_t avgReadMv = total / NUM_READINGS;
 
     // Calculate the battery voltage using formula
-    uint16_t battMv = CALCULATE_BATT_MV(avgReadMv);
-
-    return battMv;
+    return CALCULATE_BATT_MV(avgReadMv);
 }
 
 /**
@@ -68,9 +68,7 @@ void powerManagerTask(void *pvParameters)
     for (;;)
     {
         // Read the battery voltage
-        uint16_t battMv = getAveragedBattVoltage();
-
-        Serial.printf("Battery voltage: %d mV\n", battMv);
+        dataToSend.battery = getAveragedBattVoltage();
 
         // Wait for the next cycle.
         xTaskDelayUntil(&xLastWakeTime, xFrequency);
