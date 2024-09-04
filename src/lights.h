@@ -31,6 +31,7 @@ enum LightControlMethod
 enum
 {
     BOOM_LIGHTS,
+    REAR_LIGHTS,
     ROOF_FRONT_LIGHTS,
     ROOF_BACK_LIGHTS,
     LEFT_HEADLIGHT,

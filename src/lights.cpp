@@ -33,6 +33,7 @@
 
 // LEDC channels
 #define BOOM_LIGHTS_CHANNEL  LEDC_CHANNEL_0
+#define REAR_LIGHTS_CHANNEL  LEDC_CHANNEL_1
 #define BEACON_LIGHT_CHANNEL LEDC_CHANNEL_2 // Use channel 2 to use another timer with another frequency
 
 // Helper macros
@@ -46,6 +47,7 @@
 // Global array of all lights
 Light lights[NUM_LIGHTS] = {
     [BOOM_LIGHTS] = {.controlMethod = DIRECT_GPIO, .gpio = {BOOM_LIGHTS_PIN, BOOM_LIGHTS_CHANNEL}},
+    [REAR_LIGHTS] = {.controlMethod = DIRECT_GPIO, .gpio = {REAR_LIGHTS_PIN, REAR_LIGHTS_CHANNEL}},
     [ROOF_FRONT_LIGHTS] = {.controlMethod = EXPANDER, .expPin = ROOF_FRONT_LIGHTS_PIN},
     [ROOF_BACK_LIGHTS] = {.controlMethod = EXPANDER, .expPin = ROOF_BACK_LIGHTS_PIN},
     [LEFT_HEADLIGHT] = {.controlMethod = EXPANDER, .expPin = LEFT_HEADLIGHT_PIN},
@@ -125,6 +127,7 @@ void _updateLightsMode()
             lights[ROOF_BACK_LIGHTS].targetPWM = PWM_ON;
             lights[LEFT_HEADLIGHT].targetPWM = PWM_ON;
             lights[RIGHT_HEADLIGHT].targetPWM = PWM_ON;
+            lights[REAR_LIGHTS].targetPWM = PWM_ON;
             break;
         case ALL_LIGHTS:
             // Turn on all lights
@@ -134,6 +137,7 @@ void _updateLightsMode()
         case ALL_LIGHTS_WITH_BLINKING:
             // All lights on, but left and right lights blink
             lights[BOOM_LIGHTS].targetPWM = PWM_ON;
+            lights[REAR_LIGHTS].targetPWM = PWM_ON;
             lights[ROOF_FRONT_LIGHTS].targetPWM = PWM_ON;
             lights[ROOF_BACK_LIGHTS].targetPWM = PWM_ON;
 

@@ -25,6 +25,7 @@
 // Lights connected directly to ESP32
 #define BOOM_LIGHTS_PIN  GPIO_NUM_26
 #define BEACON_LIGHT_PIN GPIO_NUM_13
+#define REAR_LIGHTS_PIN  GPIO_NUM_5
 
 // Lights connected via expander
 #define LEFT_HEADLIGHT_PIN    0
